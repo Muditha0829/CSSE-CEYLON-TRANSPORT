@@ -6,18 +6,19 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
 import {Link} from "react-router-dom";
-
-
-// import { useNavigate} from 'react-router-dom';
 // import axios from 'axios';
 
+import { registerLocalUser, registerForeignUser } from "../../firebase.api";
+
+
+//Styles
 const paperStyle={padding:'0 0 0 0', height:'auto', width:400, margin:'50px'};
 const textStyle={margin:'0px 0px 20px 0px'};
 const btnStyle={margin:'8px 0'};
 const bottomText={margin:'10px 0px 10px 0px'};
-// const errorMsg = {width:"auto", padding: "15px", margin:"5px 0",fontSize: "15px",
-//                   backgroundColor:"#f34646",color:"white",textAlign:"center", borderRadius:"4px"
-//                 };
+const errorMsg = {width:"auto", padding: "15px", margin:"5px 0",fontSize: "15px",
+                  backgroundColor:"#f34646",color:"white",textAlign:"center", borderRadius:"4px"
+                };
 
 function TabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -56,9 +57,9 @@ function TabPanel(props) {
 
 const Signup=()=>{
 
-
   const [credentials,setCredentials] = useState({
     fullName:'',
+    userType:'',
     nic:'',
     passportNo:'',
     phoneNumber:'',
@@ -66,6 +67,9 @@ const Signup=()=>{
     password:'',
     cpassword:'',
   });
+
+
+    const [error,setError] = useState("");
   
     const handleChange = (e) =>{
         setCredentials({...credentials,[e.target.name]:e.target.value});}
@@ -74,44 +78,58 @@ const Signup=()=>{
 
     const handleChangeTab = (event, newValue) => {
       setValue(newValue);
+      console.log(value);
     };
 
-//   const handleSubmit = async (e) =>{
-//     e.preventDefault();
+  const handleSubmit = async (e) =>{
+    e.preventDefault();
 
-//     if(!(credentials.password===credentials.cpassword)){
-//       alert("Error in password");
-//     }else{
-//       try{
-//         const user = {
-//             "firstName":credentials.firstName,
-//             "lastName":credentials.lastName,
-//           "email":credentials.email,
-//           "password":credentials.password,
-//           "gender":credentials.gender,
-//           "city":credentials.city,
-//           "province":credentials.province
-//         }
-//         console.log(user);
+    if(!(credentials.password===credentials.cpassword)){
+      alert("Error in password");
+    }else{
+      try{
 
-//         await axios.post("http://localhost:4500/user/add",user).then(() => {
-//           alert("User Created");
-//           navigate('/signin');
-//         })
+        if(value===0){
+          const localUser = {
+            "fullName":credentials.fullName,
+            "userType":'local',
+            "nic":credentials.nic,
+            "phoneNo":credentials.phoneNumber,
+            "email":credentials.email,
+            "password":credentials.password,
+        }
+        console.log(localUser);
+
+        registerLocalUser(localUser);
+
+        }else{
+          const foreignUser = {
+            "fullName":credentials.fullName,
+            "userType":'foreign',
+            "passportNo":credentials.passportNo,
+            "phoneNo":credentials.phoneNumber,
+            "email":credentials.email,
+            "password":credentials.password,
+        }
+        console.log(foreignUser);
+
+        registerForeignUser(foreignUser);
+        }
+
+    
         
-        
-//       }catch(error){
-//         console.log(error)
-//         if(
-//           error.response &&
-//           error.response.status >=400 &&
-//           error.response.status <=500
-//         ){
-//           setError(error.response.data.message);
-//         }
-//       }
-//     }
-//   }
+      }catch(error){
+        console.log(error)
+        if(
+          error.response &&
+          error.response.status >=400 &&
+          error.response.status <=500
+        ){
+          setError(error.response.data.message);
+        }
+      }
+    }
+  }
 
 
   return(
@@ -119,7 +137,6 @@ const Signup=()=>{
         <Grid item xs={4}>
         <Paper elevation={0} style={paperStyle}>
         <Grid align='center'>
-          {/* <img src={Logo} alt="Logo" /> */}
           <Typography variant="h5" gutterBottom>
         Register
       </Typography>
@@ -136,28 +153,28 @@ const Signup=()=>{
 
       <TabPanel value={value} index={0}>
 
-      <form>
-        <TextField label="Enter Your Full Name" type="text" name="fullName" fullWidth required style={textStyle} value={credentials.fullName} onChange={handleChange} />
+      <form onSubmit={handleSubmit}>
+        <TextField label="Enter Your Full Name" type="text" name="fullName" fullWidth required style={textStyle} value={credentials.fullName} onChange={handleChange}/>
         <TextField label="Enter Your NIC" type="text" name="nic" fullWidth required style={textStyle} value={credentials.nic} onChange={handleChange} />
         <TextField label="Enter Your Contact No" type="text" name="phoneNumber" fullWidth required style={textStyle} value={credentials.phoneNumber} onChange={handleChange} />
         <TextField label="Enter Your Email Address" type="email" name="email" fullWidth required style={textStyle} value={credentials.email} onChange={handleChange} />
         <TextField label="Password"  type="password" name="password" fullWidth required style={textStyle} value={credentials.password} onChange={handleChange}/>
         <TextField label="Confirm Password"  type="password" name="cpassword" fullWidth required style={textStyle} value={credentials.cpassword} onChange={handleChange}/>
-        {/* {error && <div style={errorMsg}>{error}</div>} */}
+        {error && <div style={errorMsg}>{error}</div>}
         <Button type="submit" color="primary" variant="contained" fullWidth style={btnStyle} >Sign Up</Button>
         </form>
 
       </TabPanel>
       <TabPanel value={value} index={1}>
 
-      <form>
+      <form onSubmit={handleSubmit}>
         <TextField label="Enter Your Full Name" type="text" name="fullName" fullWidth required style={textStyle} value={credentials.fullName} onChange={handleChange} />
         <TextField label="Enter Your Passport No" type="text" name="passportNo" fullWidth required style={textStyle} value={credentials.passportNo} onChange={handleChange} />
         <TextField label="Enter Your Contact No" type="text" name="phoneNumber" fullWidth required style={textStyle} value={credentials.phoneNumber} onChange={handleChange} />
         <TextField label="Enter Your Email Address" type="email" name="email" fullWidth required style={textStyle} value={credentials.email} onChange={handleChange} />
         <TextField label="Password"  type="password" name="password" fullWidth required style={textStyle} value={credentials.password} onChange={handleChange}/>
         <TextField label="Confirm Password"  type="password" name="cpassword" fullWidth required style={textStyle} value={credentials.cpassword} onChange={handleChange}/>
-        {/* {error && <div style={errorMsg}>{error}</div>} */}
+        {error && <div style={errorMsg}>{error}</div>}
         <Button type="submit" color="primary" variant="contained" fullWidth style={btnStyle} >Sign Up</Button>
         </form>
 
