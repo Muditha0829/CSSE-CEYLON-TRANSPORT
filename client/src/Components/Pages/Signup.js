@@ -85,7 +85,7 @@ const Signup=()=>{
     e.preventDefault();
 
     if(!(credentials.password===credentials.cpassword)){
-      alert("Error in password");
+      setError("Error in password");
     }else{
       try{
 
@@ -100,7 +100,13 @@ const Signup=()=>{
         }
         console.log(localUser);
 
-        registerLocalUser(localUser);
+        registerLocalUser(localUser).then((result) => {
+          console.log(result)
+        }).catch((error) => {
+          console.log(error)
+        });
+
+        
 
         }else{
           const foreignUser = {
@@ -115,20 +121,14 @@ const Signup=()=>{
 
         registerForeignUser(foreignUser);
         }
-
-    
         
       }catch(error){
-        console.log(error)
-        if(
-          error.response &&
-          error.response.status >=400 &&
-          error.response.status <=500
-        ){
-          setError(error.response.data.message);
-        }
+        console.log(error.response.data.message);
+     
+          setError(error);
       }
     }
+
   }
 
 
