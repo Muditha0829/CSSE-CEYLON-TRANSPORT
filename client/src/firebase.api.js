@@ -1,10 +1,29 @@
 //Firebase libraries
 import {firestore} from './firebase.config';
 import { doc, setDoc } from "firebase/firestore"; 
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword,onAuthStateChanged ,signOut} from "firebase/auth";
 
 const db = firestore;
 const auth = getAuth();
+
+export function userCheck(){
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+          const uid = user.uid;
+          console.log(uid)
+          return uid;
+          // ...
+        } else {
+          // User is signed out
+          console.log('No User');
+          return 'No-User';
+        }
+      });
+}
+
+export function userSignOut(){
+    signOut(auth);
+}
 
 export function registerLocalUser(user){
 

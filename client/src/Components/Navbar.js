@@ -10,13 +10,32 @@ import Container from '@mui/material/Container';
 import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import NotificationsIcon from '@mui/icons-material/Notifications';
-
 import Badge from '@mui/material/Badge';
+import AccountCircle from '@mui/icons-material/AccountCircle';
+import { useEffect } from 'react';
+import { Link } from 'react-router-dom';
 
+import { useNavigate } from "react-router-dom";
+// import { userSignOut } from '../firebase.api';
+import { getAuth,onAuthStateChanged,signOut } from 'firebase/auth';
+
+const settings = ['Profile','Dashboard','Logout'];
 const pages = [''];
 
+
 function Navbar() {
+
   const [anchorElNav, setAnchorElNav] = React.useState(null);
+  const [auths, setAuths] = React.useState(true);
+  const [anchorEl, setAnchorEl] = React.useState(null);
+
+  const handleMenu = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
@@ -25,6 +44,29 @@ function Navbar() {
   const handleCloseNavMenu = () => {
     setAnchorElNav(null);
   };
+
+  
+  const handleCloseUserMenu = () => {
+    setAnchorEl(null);
+  };
+
+  const navigate = useNavigate();
+
+  useEffect(()=>{
+    const auth = getAuth();
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        const uid = user.uid;
+        setAuths(true)
+        console.log(auths);
+        // ...
+      } else {
+        setAuths(false);
+        console.log(auths);
+      }
+    });
+  },[auths])
+
 
   return (
     <AppBar position="static">
@@ -115,7 +157,8 @@ function Navbar() {
               </Button>
             ))}
           </Box>
-          <IconButton
+          {auths && (<div>
+            <IconButton
               size="large"
               aria-label="show 17 new notifications"
               color="inherit"
@@ -124,7 +167,47 @@ function Navbar() {
                 <NotificationsIcon />
               </Badge>
             </IconButton>
-          <Button color="inherit">Login</Button>
+          </div>)}
+          {!auths && (<div><Button color="inherit" onClick={()=>{navigate('/signin')}}>Login</Button></div>)}
+          {/* {auth && (<div><Button color="inherit" onClick={userCheck()}>Check</Button></div>)} */}
+          {auths && (<div><Button color="inherit" onClick={()=>{signOut(getAuth());}}>Logout</Button></div>)}
+          {auths && (
+            <div>
+              <IconButton
+                size="large"
+                aria-label="account of current user"
+                aria-controls="menu-appbar"
+                aria-haspopup="true"
+                onClick={handleMenu}
+                color="inherit"
+              >
+                <AccountCircle />
+              </IconButton>
+              <Menu
+                id="menu-appbar"
+                anchorEl={anchorEl}
+                anchorOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                keepMounted
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                open={Boolean(anchorEl)}
+                onClose={handleClose}
+              >
+                {settings.map((setting) => (
+                <Link to={`${setting}`} style={{textDecoration:'none'}}>
+                <MenuItem key={setting} onClick={handleCloseUserMenu}>
+            <Typography textAlign="center">{setting}</Typography>
+          </MenuItem>
+          </Link>
+              ))}
+              </Menu>
+            </div>
+          )}
         </Toolbar>
       </Container>
     </AppBar>

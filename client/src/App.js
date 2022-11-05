@@ -1,9 +1,11 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import NavBar from "./Components/Navbar";
+import DashBoard from "./Components/Pages/Dashboard";
 import Signin from "./Components/Pages/Signin";
 import Signup from "./Components/Pages/Signup";
 
 function App() {
+
   return (
     
     <BrowserRouter>
@@ -12,6 +14,7 @@ function App() {
       <Routes>
         <Route path='/signin' element={<Signin/>}/>
         <Route path='/signup' element={<Signup/>}/>
+        <Route path='/' element={<DashBoard/>}/>
       </Routes>
     </BrowserRouter>
   );
