@@ -6,9 +6,14 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
 import {Link} from "react-router-dom";
-// import axios from 'axios';
 
-import { registerLocalUser, registerForeignUser } from "../../firebase.api";
+//Firebase Libraries
+import {firestore} from './../../firebase.config';
+import { doc, setDoc } from "firebase/firestore"; 
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+
+const db = firestore;
+const auth = getAuth();
 
 
 //Styles
@@ -19,7 +24,11 @@ const bottomText={margin:'10px 0px 10px 0px'};
 const errorMsg = {width:"auto", padding: "15px", margin:"5px 0",fontSize: "15px",
                   backgroundColor:"#f34646",color:"white",textAlign:"center", borderRadius:"4px"
                 };
+const successMsg = {width:"auto", padding: "15px", margin:"5px 0",fontSize: "15px",
+                backgroundColor:"#17ad30",color:"white",textAlign:"center", borderRadius:"4px"
+              };
 
+//UI Functions
 function TabPanel(props) {
     const { children, value, index, ...other } = props;
   
@@ -46,14 +55,12 @@ function TabPanel(props) {
     value: PropTypes.number.isRequired,
   };
   
-  function a11yProps(index) {
+function a11yProps(index) {
     return {
       id: `simple-tab-${index}`,
       'aria-controls': `simple-tabpanel-${index}`,
     };
   }
-
-
 
 const Signup=()=>{
 
@@ -70,6 +77,7 @@ const Signup=()=>{
 
 
     const [error,setError] = useState("");
+    const [success,setSuccess] = useState("");
   
     const handleChange = (e) =>{
         setCredentials({...credentials,[e.target.name]:e.target.value});}
@@ -80,6 +88,82 @@ const Signup=()=>{
       setValue(newValue);
       console.log(value);
     };
+
+    //Register function for local user
+    function registerLocalUser(user){
+
+      createUserWithEmailAndPassword(auth, user.email, user.password).then((userCredential)=>{
+      
+      const userFromDb = userCredential.user;
+      const userId = userCredential.user.uid;
+      
+      console.log(userCredential);
+      console.log(userFromDb);
+      
+      const userDoc = {
+      "uid":userId,
+      "email":user.email,
+      "fullName":user.fullName,
+      "userType":'local',
+      "nic":user.nic,
+      "phoneNo":user.phoneNo
+       }
+  
+      setDoc(doc(db, "userData", userId), userDoc);
+      setSuccess('User Created Successfully');
+  
+  }).catch((error) => {
+      if (error.code ==="auth/email-already-in-use") {
+          setError("The email address is already in use");
+      }else if (error.code === "auth/invalid-email") {
+          setError("The email address is not valid.");
+      } else if (error.code === "auth/operation-not-allowed") {
+          setError("Operation not allowed.");
+      } else if (error.code === "auth/weak-password") {
+          setError("The password is too weak.");
+      }
+  
+    });
+  
+  }
+    //Register function for foreign user
+    function registerForeignUser(user){
+    
+      createUserWithEmailAndPassword(auth, user.email, user.password).then((userCredential)=>{
+              
+          const userFromDb = userCredential.user;
+          const userId = userCredential.user.uid;
+          
+          console.log(userCredential);
+          console.log(userFromDb);
+          
+          const userDoc = {
+          "uid":userId,
+          "email":user.email,
+          "fullName":user.fullName,
+          "userType":'foreign',
+          "passportNo":user.passportNo,
+          "phoneNo":user.phoneNo
+           }
+  
+          setDoc(doc(db, "userData", userId), userDoc);
+          setSuccess('User Created Successfully');
+
+  
+      }).catch((error) => {
+        if (error.code ==="auth/email-already-in-use") {
+            setError("The email address is already in use");
+        }else if (error.code === "auth/invalid-email") {
+            setError("The email address is not valid.");
+        } else if (error.code === "auth/operation-not-allowed") {
+            setError("Operation not allowed.");
+        } else if (error.code === "auth/weak-password") {
+            setError("The password is too weak.");
+        }
+    
+      });
+  
+  }
 
   const handleSubmit = async (e) =>{
     e.preventDefault();
@@ -100,13 +184,7 @@ const Signup=()=>{
         }
         console.log(localUser);
 
-        registerLocalUser(localUser).then((result) => {
-          console.log(result)
-        }).catch((error) => {
-          console.log(error)
-        });
-
-        
+        registerLocalUser(localUser);
 
         }else{
           const foreignUser = {
@@ -120,12 +198,17 @@ const Signup=()=>{
         console.log(foreignUser);
 
         registerForeignUser(foreignUser);
+        
         }
         
       }catch(error){
-        console.log(error.response.data.message);
-     
-          setError(error);
+        if(
+          error.response &&
+          error.response.status >=400 &&
+          error.response.status <=500
+        ){
+          setError(error.response.data.message);
+        }
       }
     }
 
@@ -161,6 +244,8 @@ const Signup=()=>{
         <TextField label="Password"  type="password" name="password" fullWidth required style={textStyle} value={credentials.password} onChange={handleChange}/>
         <TextField label="Confirm Password"  type="password" name="cpassword" fullWidth required style={textStyle} value={credentials.cpassword} onChange={handleChange}/>
         {error && <div style={errorMsg}>{error}</div>}
+        {success && <div style={successMsg}>{success}</div>}
+
         <Button type="submit" color="primary" variant="contained" fullWidth style={btnStyle} >Sign Up</Button>
         </form>
 
@@ -175,11 +260,13 @@ const Signup=()=>{
         <TextField label="Password"  type="password" name="password" fullWidth required style={textStyle} value={credentials.password} onChange={handleChange}/>
         <TextField label="Confirm Password"  type="password" name="cpassword" fullWidth required style={textStyle} value={credentials.cpassword} onChange={handleChange}/>
         {error && <div style={errorMsg}>{error}</div>}
+        {success && <div style={successMsg}>{success}</div>}
         <Button type="submit" color="primary" variant="contained" fullWidth style={btnStyle} >Sign Up</Button>
         </form>
 
       </TabPanel>
     </Box>
+    
 
     
         <div align='center' style={bottomText}>

@@ -30,13 +30,16 @@ export function registerLocalUser(user){
         }).catch((error) => {
             if (error.code ==="auth/email-already-in-use") {
                 console.log("The email address is already in use");
+                // return "The email address is already in use";
             }else if (error.code === "auth/invalid-email") {
-                alert("The email address is not valid.");
+                console.log("The email address is not valid.");
             } else if (error.code === "auth/operation-not-allowed") {
-                alert("Operation not allowed.");
+                console.log("Operation not allowed.");
             } else if (error.code === "auth/weak-password") {
-                alert("The password is too weak.");
+                console.log("The password is too weak.");
             }
+
+            return error;
 
 
 
