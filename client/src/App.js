@@ -19,7 +19,7 @@ function App() {
       if (!user) {
         setAuths(false);
       }else{
-        console.log(user);
+        // console.log(user);
         setAuths(true);
       }
     })

@@ -174,7 +174,7 @@ function Navbar() {
           </div>)}
           {!auths && (<div><Button color="inherit" onClick={()=>{navigate('/signin')}}>Login</Button></div>)}
           {/* {auth && (<div><Button color="inherit" onClick={userCheck()}>Check</Button></div>)} */}
-          {auths && (<div><Button color="inherit" onClick={()=>{signOut(getAuth());}}>Logout</Button></div>)}
+          {auths && (<div><Button color="inherit" onClick={()=>{signOut(getAuth());navigate('/signin')}}>Logout</Button></div>)}
           {auths && (
             <div>
               <IconButton
