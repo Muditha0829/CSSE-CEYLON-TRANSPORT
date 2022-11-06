@@ -1,9 +1,10 @@
 //Firebase libraries
-import {firestore} from './firebase.config';
-import { doc, setDoc } from "firebase/firestore"; 
+import {db} from './firebase.config';
+import { doc, setDoc,getDoc } from "firebase/firestore";
 import { getAuth, createUserWithEmailAndPassword,onAuthStateChanged ,signOut} from "firebase/auth";
 
-const db = firestore;
+
+// const db = firestore;
 const auth = getAuth();
 
 export function userCheck(){
@@ -105,5 +106,43 @@ export function registerForeignUser(user){
 
       });
 
+}
+
+//Get User Data
+export function getData(id) {
+    return new Promise((resolve,reject)=>{
+        db.collection("userData").doc(id).get().then((snapshot) => {
+            resolve(snapshot.data());
+            // console.log(snapshot.data())
+            }).catch((e) => {
+            reject(e);
+            })
+    })
+}
+
+//Update User Data
+export function updateUserData(id){
+    return new Promise((resolve,reject)=>{
+        db.collection("userData").doc(id).update({
+            fullName:'ImalshaRc'
+        }).then((res)=>{
+            console.log('Updated');
+            resolve('Updated')
+        }).catch((e)=>{
+            reject(e);
+        })
+    })
+}
+
+export function getAllData(){
+    return new Promise((resolve,reject)=>{
+        const docRef = doc(db, "userData", "KMGlh8RrzwexEAISii2eWeEWuHj1");
+        try{
+            const docSnap =  getDoc(docRef);
+        console.log(docSnap.data());
+        }catch (e) {
+            console.log("Error getting cached document:", e);
+          }
+    })
 }
 

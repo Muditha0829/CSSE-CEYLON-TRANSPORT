@@ -1,12 +1,15 @@
 import React, {useEffect} from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+
 import NavBar from "./Components/Navbar";
 import DashBoard from "./Components/Pages/Dashboard";
 import Signin from "./Components/Pages/Signin";
 import Signup from "./Components/Pages/Signup";
+import Profile from "./Components/Pages/Profile";
 
 
 import { getAuth,onAuthStateChanged } from 'firebase/auth';
+import { UpdateProfile } from "./Components/Pages/UpdateProfile";
 
 
 function App() {
@@ -48,6 +51,9 @@ function App() {
         {auths && (
           <Route path='/' element={<DashBoard/>}/>
         )}
+
+          <Route path='/profile' element={<Profile/>}/>
+          <Route path='/updateprofile' element={<UpdateProfile/>}/>
           
         
 
