@@ -56,7 +56,7 @@ function Navbar() {
     const auth = getAuth();
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        const uid = user.uid;
+        // const uid = user.uid;
         setAuths(true)
         console.log(auths);
         // ...
@@ -65,7 +65,11 @@ function Navbar() {
         console.log(auths);
       }
     });
-  },[auths])
+
+    if(!auths){
+      // navigate('/signin');
+    }
+  },[auths,navigate])
 
 
   return (

@@ -16,6 +16,8 @@ const db = firestore;
 const auth = getAuth();
 
 
+
+
 //Styles
 const paperStyle={padding:'0 0 0 0', height:'auto', width:400, margin:'50px'};
 const textStyle={margin:'0px 0px 20px 0px'};
@@ -78,11 +80,12 @@ const Signup=()=>{
 
     const [error,setError] = useState("");
     const [success,setSuccess] = useState("");
+    const [value, setValue] = React.useState(0);
+
   
     const handleChange = (e) =>{
         setCredentials({...credentials,[e.target.name]:e.target.value});}
 
-    const [value, setValue] = React.useState(0);
 
     const handleChangeTab = (event, newValue) => {
       setValue(newValue);

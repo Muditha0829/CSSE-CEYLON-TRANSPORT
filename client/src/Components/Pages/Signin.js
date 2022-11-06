@@ -2,9 +2,12 @@ import {  Button, Grid, Paper, TextField, Typography } from "@mui/material";
 import {Link} from "react-router-dom";
 import React, { useState } from "react";
 import Image from './../../Images/bus.webp'
+import { useNavigate } from "react-router-dom";
 
+//Firebase libraries
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { app } from "../../firebase.config";
+
 
 
 const auth = getAuth(app);
@@ -28,9 +31,11 @@ const Signin=()=>{
     email:'',
     password:''
   });
-
+  
   const [error,setError] = useState("");
   const [success,setSuccess] = useState("");
+  
+  const navigate = useNavigate();
 
   function displayMsg(){
     if(error){
@@ -47,6 +52,7 @@ const Signin=()=>{
     const user = userCredential.user;
     console.log(user);
     setSuccess("User Loged in")
+    navigate('/');
   })
   .catch((error) => {
     const errorCode = error.code;
@@ -83,7 +89,7 @@ const Signin=()=>{
 
   return(
     <Grid container spacing={1} justifyContent='space-between'>
-        <Grid item xs={4} mt={20}>
+        <Grid item xs={4} sm={12} md={4} mt={20}>
         <Paper elevation={0} style={paperStyle}>
         <Grid align='center'>
           <Typography variant="h5" gutterBottom>
@@ -123,9 +129,9 @@ const Signin=()=>{
       </Paper>
         </Grid>
 
-        <Grid item xs={8} mt={18}>
+        <Grid item xs={8} sm={0} md={8} mt={18}>
         
-        <img src={Image} style={{ width: 900, height: 500}} alt='img'/>
+        <img src={Image} style={{ maxWidth:900, maxHeight:500}} alt='img'/>
 
         </Grid>
       
