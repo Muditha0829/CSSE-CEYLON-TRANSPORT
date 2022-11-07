@@ -120,11 +120,31 @@ export function getData(id) {
     })
 }
 
-//Update User Data
-export function updateUserData(id){
+//Update User Data - Local
+export function updateUserDataLocal(id,updatedDoc){
     return new Promise((resolve,reject)=>{
         db.collection("userData").doc(id).update({
-            fullName:'ImalshaRc'
+            fullName:updatedDoc.fullName,
+            nic:updatedDoc.nic,
+            phoneNo:updatedDoc.phoneNo
+
+        }).then((res)=>{
+            console.log('Updated');
+            resolve('Updated')
+        }).catch((e)=>{
+            reject(e);
+        })
+    })
+}
+
+//Update User Data - Foreign
+export function updateUserDataForeign(id,updatedDoc){
+    return new Promise((resolve,reject)=>{
+        db.collection("userData").doc(id).update({
+            fullName:updatedDoc.fullName,
+            passportNo:updatedDoc.passportNo,
+            phoneNo:updatedDoc.phoneNo
+
         }).then((res)=>{
             console.log('Updated');
             resolve('Updated')
