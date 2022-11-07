@@ -1,19 +1,48 @@
 import { useEffect,useState } from "react"
+import { Grid, Paper,Button } from "@mui/material";
+import Typography from '@mui/material/Typography';
+import { useNavigate } from "react-router-dom";
 
 // import { doc, getDoc } from "firebase/firestore";
 import { getAuth,onAuthStateChanged } from 'firebase/auth';
 
 // import { firestore } from "../../firebase.config";
-import { getData } from "../../firebase.api";
+import { getData,deleteUserWithData } from "../../firebase.api";
+
+//Mui Icons
+import NameIcon from '@mui/icons-material/Dns';
+import ContactPhoneIcon from '@mui/icons-material/ContactPhone';
+import AlternateEmailIcon from '@mui/icons-material/AlternateEmail';
+import IdIcon from '@mui/icons-material/Badge';
+
+//import dialog components
+import * as React from 'react';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
 
 export default function Profile(){
 
-    // const db = firestore;
+    const [open, setOpen] = React.useState(false);
 
+    const handleClickOpen = () => {
+      setOpen(true);
+    };
+  
+    const handleClose = () => {
+      setOpen(false);
+    };
+
+    //Styles in component
+    const paperStyle={padding:20, height:'auto', width:400, margin:'50px auto'};
+    const btnStyle={margin:'8px 0'};
     
     const [userId, setUserId] = useState([]);
-    const [user, setUser] = useState([]);
     const [data, setData] = useState([]);
+
+    const navigate = useNavigate();
 
     function fetchData(){
         getData(userId).then((res)=>{
@@ -25,11 +54,9 @@ export default function Profile(){
     }
 
     const loader = async () => {
-        // const user = await getUser();
-        onAuthStateChanged(getAuth(),(user1)=>{
-          if (user1) {
-            setUser(user1);
-            setUserId(user1.uid)
+        onAuthStateChanged(getAuth(),(user)=>{
+          if (user) {
+            setUserId(user.uid)
           }
         })
       }
@@ -37,21 +64,64 @@ export default function Profile(){
     useEffect(()=>{
         fetchData();
         loader();
-        // getFromDb();
+
     })
 
-    // getAllData();
+    function afterDeletion(){
+        deleteUserWithData().then((result) => {
+            console.log(result)
+            navigate('/signin')
+        }).catch((err) => {
+            console.log(err);
+            alert(err);
+        });
+    }
     
 
     return(
-        <div><center>
-            <h1>Profile</h1>
-            {<h3>{data.fullName}</h3>}
-            {<h3>{data.nic}</h3>}
-            {<h3>{data.uid}</h3>}
-            {<h3>{data.userType}</h3>}
-            {<h3>{data.email}</h3>}
-        </center>
+
+        <div>
+            <Paper elevation={10} style={paperStyle}>
+        <Grid align='center'>
+          {/* <img src={Logo} alt="Logo" /> */}
+          <Typography variant="h5" gutterBottom>My Profile </Typography>
+            <Grid align='left' mt={5}>
+
+            {<Typography variant="h6" gutterBottom><NameIcon/> &nbsp;&nbsp;Full Name : {data.fullName} </Typography>}
+            <div>
+                {data.userType==='local'
+            ? <Typography variant="h6" gutterBottom><IdIcon/> &nbsp;&nbsp;NIC : {data.nic} </Typography>
+            : <Typography variant="h6" gutterBottom><IdIcon/> &nbsp;&nbsp;Passport No : {data.passportNo} </Typography>
+            }
+        </div>
+            {<Typography variant="h6" gutterBottom><AlternateEmailIcon/> &nbsp;&nbsp;Email : {data.email} </Typography>}
+            {<Typography variant="h6" gutterBottom><ContactPhoneIcon/> &nbsp;&nbsp;Phone Number: {data.phoneNo} </Typography>}
+            </Grid>
+
+            <Button type="submit" color="primary" variant="contained" onClick={()=>{navigate('/updateprofile')}} fullWidth style={btnStyle}>Update Profile</Button>
+            <Button type="submit" color="primary" variant="contained" onClick={()=>{navigate('/updatepassword')}} fullWidth style={btnStyle}>Change Password</Button>
+            <Button type="submit" color="error" variant="outlined" onClick={handleClickOpen} fullWidth style={btnStyle}>Delete Account</Button>
+            <Dialog
+                open={open}
+                onClose={handleClose}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description" >
+                    <DialogTitle id="alert-dialog-title">
+                    {'Do you want to delete this account?'}
+                    </DialogTitle>
+                    <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                        If you delete this account, you will be lost your entered data and this account cannot be recovered again
+                    </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                    <Button onClick={handleClose}>Cancel</Button>
+                    <Button color="error" variant="contained"  onClick={afterDeletion} autoFocus>Delete</Button>
+                    </DialogActions>
+                </Dialog>
+                    </Grid>
+        
+                </Paper>
         </div>
     )
 }

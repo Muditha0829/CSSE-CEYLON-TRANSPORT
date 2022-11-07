@@ -9,13 +9,17 @@ export function UpdateProfile(){
     const paperStyle={padding:20, height:'auto', width:400, margin:'50px auto'};
     const btnStyle={margin:'8px 0'};
     const textStyle={margin:'0px 0px 20px 0px'};
-    // const errorMsg = {width:"auto", padding: "15px", margin:"5px 0",fontSize: "15px",
-    //               backgroundColor:"#f34646",color:"white",textAlign:"center", borderRadius:"4px"
-    //             };  
+    const errorMsg = {width:"auto", padding: "15px", margin:"5px 0",fontSize: "15px",
+    backgroundColor:"#f34646",color:"white",textAlign:"center", borderRadius:"4px"
+                };
+    const successMsg = {width:"auto", padding: "15px", margin:"5px 0",fontSize: "15px",
+          color:"#17ad30",textAlign:"center", borderRadius:"4px"
+                };
     
     const [userId, setUserId] = useState([]);
-    // const [user, setUser] = useState([]);
-    // const [data, setData] = useState([]);
+    const [error,setError] = useState("");
+    const [msg,setMsg] = useState(false);
+    const [success,setSuccess] = useState("");
     
     useEffect(()=>{
         loader();
@@ -35,7 +39,8 @@ export function UpdateProfile(){
     
 
     const handleChange = (e) =>{
-        setCredentials({...credentials,[e.target.name]:e.target.value});}
+        setCredentials({...credentials,[e.target.name]:e.target.value});
+    }
 
     const handleSubmit = async (e) =>{
             e.preventDefault();
@@ -43,15 +48,23 @@ export function UpdateProfile(){
                 console.log(credentials);
                 updateUserDataLocal(userId,credentials).then((res)=>{
                     console.log(res);
+                    setSuccess(res);
+                    setMsg(false)
                 }).catch((e)=>{
-                    console.log(e)
+                    console.log(e);
+                    setError(e);
+                    setMsg(true);
                 })
             }else{
                 console.log(credentials);
                 updateUserDataForeign(userId,credentials).then((res)=>{
                     console.log(res);
+                    setSuccess(res);
+                    setMsg(false)
                 }).catch((e)=>{
-                    console.log(e)
+                    console.log(e);
+                    setError(e);
+                    setMsg(true);
                 })
             }
         }
@@ -67,6 +80,14 @@ export function UpdateProfile(){
         })
 
         
+      }
+
+      function displayMsg(){
+        if(msg===true){
+            return <div style={errorMsg}>{error}</div>
+        }else{
+            return <div style={successMsg}>{success}</div>
+        }
       }
 
 
@@ -89,8 +110,7 @@ export function UpdateProfile(){
         </div>
         
         <TextField label="Enter Your Contact No" type="text" name="phoneNo" fullWidth required style={textStyle} value={credentials.phoneNo} onChange={handleChange} />
-        {/* {error && <div style={errorMsg}>{error}</div>}
-        {success && <div style={successMsg}>{success}</div>} */}
+        {displayMsg()}
 
         <Button type="submit" color="primary" variant="contained" fullWidth style={btnStyle} >Update</Button>
         </form>

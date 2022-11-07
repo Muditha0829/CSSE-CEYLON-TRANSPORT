@@ -10,6 +10,8 @@ import Profile from "./Components/Pages/Profile";
 
 import { getAuth,onAuthStateChanged } from 'firebase/auth';
 import { UpdateProfile } from "./Components/Pages/UpdateProfile";
+import { UpdatePassword } from "./Components/Pages/UpdatePassword";
+import Logout from "./Components/Logout";
 
 
 function App() {
@@ -54,6 +56,8 @@ function App() {
 
           <Route path='/profile' element={<Profile/>}/>
           <Route path='/updateprofile' element={<UpdateProfile/>}/>
+          <Route path='/updatepassword' element={<UpdatePassword/>}/>
+          <Route path='/logout' element={<Logout/>}/>
           
         
 

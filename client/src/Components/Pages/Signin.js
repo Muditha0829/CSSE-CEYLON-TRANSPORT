@@ -5,12 +5,7 @@ import Image from './../../Images/bus.webp'
 import { useNavigate } from "react-router-dom";
 
 //Firebase libraries
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
-import { app } from "../../firebase.config";
-
-
-
-const auth = getAuth(app);
+import { signInUser } from "../../firebase.api";
 
 const paperStyle={padding:'0 0 0 0', height:'auto', width:400, margin:'50px'};
 const textStyle={margin:'0px 0px 20px 0px'};
@@ -23,7 +18,6 @@ const errorMsg = {width:"auto", padding: "15px", margin:"5px 0",fontSize: "15px"
 const successMsg = {width:"auto", padding: "15px", margin:"5px 0",fontSize: "15px",
                 backgroundColor:"#17ad30",color:"white",textAlign:"center", borderRadius:"4px"
               };
-
 
 const Signin=()=>{
 
@@ -44,48 +38,20 @@ const Signin=()=>{
         return <div style={successMsg}>{success}</div>
     }
   }
-
-  function signInUser(credentials){
-
-    signInWithEmailAndPassword(auth, credentials.email, credentials.password).then((userCredential) => {
-    // Signed in 
-    const user = userCredential.user;
-    console.log(user);
-    setSuccess("User Loged in")
-    navigate('/');
-  })
-  .catch((error) => {
-    const errorCode = error.code;
-    // const errorMessage = error.message;
-    if(errorCode==='auth/wrong-password'){
-      setError('Invalid Password')
-    }else if(errorCode==='auth/user-not-found'){
-      setError('Invalid Email Address')
-    }
-    console.log(errorCode);
-  });
-
-  }
   
     const handleChange = (e) =>{
         setCredentials({...credentials,[e.target.name]:e.target.value});}
 
         const handleSubmit = async(e) =>{
             e.preventDefault();
-            signInUser(credentials)
-            try{
-              
-            }catch(error){
-              if(
-                error.response &&
-                error.response.status >=400 &&
-                error.response.status <=500
-              ){
-                setError(error.response.data.message);
-              }
-            }
+            signInUser(credentials).then((res) => {
+              setSuccess(res);
+              navigate('/');
+            }).catch((err) => {
+              setError(err);
+            });
+            
           }
-
 
   return(
     <Grid container spacing={1} justifyContent='space-between'>

@@ -1,11 +1,12 @@
 //Firebase libraries
 import {db} from './firebase.config';
 import { doc, setDoc,getDoc } from "firebase/firestore";
-import { getAuth, createUserWithEmailAndPassword,onAuthStateChanged ,signOut} from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword,onAuthStateChanged ,signOut,updatePassword,signInWithEmailAndPassword,deleteUser} from "firebase/auth";
 
 
 // const db = firestore;
 const auth = getAuth();
+const currentUser = auth.currentUser;
 
 export function userCheck(){
     onAuthStateChanged(auth, (user) => {
@@ -22,13 +23,15 @@ export function userCheck(){
       });
 }
 
+//Logout function for user to sign out
 export function userSignOut(){
     signOut(auth);
 }
 
+//Register function for local user
 export function registerLocalUser(user){
-
-            createUserWithEmailAndPassword(auth, user.email, user.password).then((userCredential)=>{
+    return new Promise((resolve,reject)=>{
+        createUserWithEmailAndPassword(auth, user.email, user.password).then((userCredential)=>{
             
             const userFromDb = userCredential.user;
             const userId = userCredential.user.uid;
@@ -46,17 +49,17 @@ export function registerLocalUser(user){
              }
 
             setDoc(doc(db, "userData", userId), userDoc);
+            resolve('User Created Successfully');
 
         }).catch((error) => {
             if (error.code ==="auth/email-already-in-use") {
-                console.log("The email address is already in use");
-                // return "The email address is already in use";
+                reject("The email address is already in use");
             }else if (error.code === "auth/invalid-email") {
-                console.log("The email address is not valid.");
+                reject("The email address is not valid.");
             } else if (error.code === "auth/operation-not-allowed") {
-                console.log("Operation not allowed.");
+                reject("Operation not allowed.");
             } else if (error.code === "auth/weak-password") {
-                console.log("The password is too weak.");
+                reject("The password is too weak.");
             }
 
             return error;
@@ -65,48 +68,72 @@ export function registerLocalUser(user){
 
           });
 
-    }
-    
-    
-  
+    })
+}
 
+    
+    
+
+//Register function for foreign user
 export function registerForeignUser(user){
-    
-    createUserWithEmailAndPassword(auth, user.email, user.password).then((userCredential)=>{
+    return new Promise((resolve,reject)=>{
+        createUserWithEmailAndPassword(auth, user.email, user.password).then((userCredential)=>{
             
-        const userFromDb = userCredential.user;
-        const userId = userCredential.user.uid;
-        
-        console.log(userCredential);
-        console.log(userFromDb);
-        
-        const userDoc = {
-        "uid":userId,
-        "email":user.email,
-        "fullName":user.fullName,
-        "userType":'foreign',
-        "passportNo":user.passportNo,
-        "phoneNo":user.phoneNo
-         }
-
-        setDoc(doc(db, "userData", userId), userDoc);
-
-    }).catch((error) => {
-        if (error.code ==="auth/email-already-in-use") {
-            console.log("The email address is already in use");
-        }else if (error.code === "auth/invalid-email") {
-            alert("The email address is not valid.");
-        } else if (error.code === "auth/operation-not-allowed") {
-            alert("Operation not allowed.");
-        } else if (error.code === "auth/weak-password") {
-            alert("The password is too weak.");
-        }
-
-
-
-      });
+            const userFromDb = userCredential.user;
+            const userId = userCredential.user.uid;
+            
+            console.log(userCredential);
+            console.log(userFromDb);
+            
+            const userDoc = {
+            "uid":userId,
+            "email":user.email,
+            "fullName":user.fullName,
+            "userType":'foreign',
+            "passportNo":user.passportNo,
+            "phoneNo":user.phoneNo
+             }
+    
+            setDoc(doc(db, "userData", userId), userDoc);
+            resolve('User Created Successfully');
+    
+    
+        }).catch((error) => {
+          if (error.code ==="auth/email-already-in-use") {
+              reject("The email address is already in use");
+          }else if (error.code === "auth/invalid-email") {
+              reject("The email address is not valid.");
+          } else if (error.code === "auth/operation-not-allowed") {
+              reject("Operation not allowed.");
+          } else if (error.code === "auth/weak-password") {
+              reject("The password is too weak.");
+          }
+      
+        });
+    })
 
 }
+
+//Sign in function for user to sign in
+export function signInUser(credentials){
+    return new Promise((resolve,reject)=>{
+        signInWithEmailAndPassword(auth, credentials.email, credentials.password).then((userCredential) => {
+            const user = userCredential.user;
+            console.log(user);
+            resolve("User Loged in")
+          })
+          .catch((error) => {
+            const errorCode = error.code;
+            if(errorCode==='auth/wrong-password'){
+              reject('Invalid Password')
+            }else if(errorCode==='auth/user-not-found'){
+              reject('Invalid Email Address')
+            }
+            console.log(errorCode);
+          });
+    })
+
+  }
 
 //Get User Data
 export function getData(id) {
@@ -129,8 +156,8 @@ export function updateUserDataLocal(id,updatedDoc){
             phoneNo:updatedDoc.phoneNo
 
         }).then((res)=>{
-            console.log('Updated');
-            resolve('Updated')
+            console.log('Data Updated Successfully');
+            resolve('Data Updated Successfully')
         }).catch((e)=>{
             reject(e);
         })
@@ -146,11 +173,38 @@ export function updateUserDataForeign(id,updatedDoc){
             phoneNo:updatedDoc.phoneNo
 
         }).then((res)=>{
-            console.log('Updated');
-            resolve('Updated')
+            console.log('Data Updated Successfully');
+            resolve('Data Updated Successfully')
         }).catch((e)=>{
             reject(e);
         })
+    })
+}
+
+//Update User password
+export function resetUserPassword(user,newPassword){
+    return new Promise((resolve,reject)=>{
+        updatePassword(user,newPassword).then(()=>{
+            resolve('Password Updated')
+        }).catch((e)=>{
+            reject(e.code);
+        })
+    })
+}
+
+//Delete user and firestore data
+export function deleteUserWithData(){
+    return new Promise((resolve,reject)=>{
+        deleteUser(currentUser).then(() => {
+            db.collection('userData').doc(currentUser.uid).delete().then(()=>{
+                console.log('From API : Firestore Data Deleted Successfully');
+            }).catch((e)=>{
+                console.log('From API : ' + e);
+            })
+            resolve('User deleted Successfully');
+          }).catch((error) => {
+            reject(error + ': Out');
+          });
     })
 }
 

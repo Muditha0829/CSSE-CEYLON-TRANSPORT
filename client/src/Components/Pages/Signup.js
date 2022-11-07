@@ -7,13 +7,7 @@ import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
 import {Link} from "react-router-dom";
 
-//Firebase Libraries
-import {firestore} from './../../firebase.config';
-import { doc, setDoc } from "firebase/firestore"; 
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
-
-const db = firestore;
-const auth = getAuth();
+import { registerLocalUser,registerForeignUser } from "../../firebase.api";
 
 
 
@@ -92,82 +86,6 @@ const Signup=()=>{
       console.log(value);
     };
 
-    //Register function for local user
-    function registerLocalUser(user){
-
-      createUserWithEmailAndPassword(auth, user.email, user.password).then((userCredential)=>{
-      
-      const userFromDb = userCredential.user;
-      const userId = userCredential.user.uid;
-      
-      console.log(userCredential);
-      console.log(userFromDb);
-      
-      const userDoc = {
-      "uid":userId,
-      "email":user.email,
-      "fullName":user.fullName,
-      "userType":'local',
-      "nic":user.nic,
-      "phoneNo":user.phoneNo
-       }
-  
-      setDoc(doc(db, "userData", userId), userDoc);
-      setSuccess('User Created Successfully');
-  
-  }).catch((error) => {
-      if (error.code ==="auth/email-already-in-use") {
-          setError("The email address is already in use");
-      }else if (error.code === "auth/invalid-email") {
-          setError("The email address is not valid.");
-      } else if (error.code === "auth/operation-not-allowed") {
-          setError("Operation not allowed.");
-      } else if (error.code === "auth/weak-password") {
-          setError("The password is too weak.");
-      }
-  
-    });
-  
-  }
-    //Register function for foreign user
-    function registerForeignUser(user){
-    
-      createUserWithEmailAndPassword(auth, user.email, user.password).then((userCredential)=>{
-              
-          const userFromDb = userCredential.user;
-          const userId = userCredential.user.uid;
-          
-          console.log(userCredential);
-          console.log(userFromDb);
-          
-          const userDoc = {
-          "uid":userId,
-          "email":user.email,
-          "fullName":user.fullName,
-          "userType":'foreign',
-          "passportNo":user.passportNo,
-          "phoneNo":user.phoneNo
-           }
-  
-          setDoc(doc(db, "userData", userId), userDoc);
-          setSuccess('User Created Successfully');
-
-  
-      }).catch((error) => {
-        if (error.code ==="auth/email-already-in-use") {
-            setError("The email address is already in use");
-        }else if (error.code === "auth/invalid-email") {
-            setError("The email address is not valid.");
-        } else if (error.code === "auth/operation-not-allowed") {
-            setError("Operation not allowed.");
-        } else if (error.code === "auth/weak-password") {
-            setError("The password is too weak.");
-        }
-    
-      });
-  
-  }
-
   const handleSubmit = async (e) =>{
     e.preventDefault();
 
@@ -187,7 +105,11 @@ const Signup=()=>{
         }
         console.log(localUser);
 
-        registerLocalUser(localUser);
+        registerLocalUser(localUser).then((res)=>{
+          setSuccess(res);
+        }).catch((e)=>{
+          setError(e);
+        })
 
         }else{
           const foreignUser = {
@@ -200,7 +122,11 @@ const Signup=()=>{
         }
         console.log(foreignUser);
 
-        registerForeignUser(foreignUser);
+        registerForeignUser(foreignUser).then((res)=>{
+          setSuccess(res);
+        }).catch((e)=>{
+          setError(e);
+        })
         
         }
         
