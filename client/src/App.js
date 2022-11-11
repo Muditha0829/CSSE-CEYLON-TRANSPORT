@@ -49,14 +49,19 @@ function App() {
         {!auths && (
           <Route path='/signup' element={<Signup/>}/>
         )}
-
         {auths && (
           <Route path='/' element={<DashBoard/>}/>
         )}
-
-          <Route path='/profile' element={<Profile/>}/>
+        {auths && (
+           <Route path='/profile' element={<Profile/>}/>
+        )}
+        {auths && (
           <Route path='/updateprofile' element={<UpdateProfile/>}/>
-          <Route path='/updatepassword' element={<UpdatePassword/>}/>
+        )}
+        {auths && (
+           <Route path='/updatepassword' element={<UpdatePassword/>}/>
+        )}
+
           <Route path='/logout' element={<Logout/>}/>
           
         
