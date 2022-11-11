@@ -71,9 +71,6 @@ export function registerLocalUser(user){
     })
 }
 
-    
-    
-
 //Register function for foreign user
 export function registerForeignUser(user){
     return new Promise((resolve,reject)=>{

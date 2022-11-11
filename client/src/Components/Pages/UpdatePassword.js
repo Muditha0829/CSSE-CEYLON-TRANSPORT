@@ -1,4 +1,4 @@
-import { Grid, Paper,Button ,TextField} from "@mui/material";
+import { Grid, Paper,Button ,TextField, CircularProgress,Box,Fade} from "@mui/material";
 import { useEffect, useState } from "react";
 
 import { getAuth,onAuthStateChanged } from 'firebase/auth';
@@ -25,21 +25,25 @@ export function UpdatePassword(){
         password:'',
         cpassword:'',
     });
+    const [loading, setLoading] = useState(false);
     const handleChange = (e) =>{
         setCredentials({...credentials,[e.target.name]:e.target.value});
     }
 
 
     function changePassword(){
+      setLoading(true);
         if(credentials.password===credentials.cpassword){
             resetUserPassword(user,credentials.cpassword).then((res)=>{
                 console.log('Password Changed Successfully');
                 setSuccess(res);
                 setMsg(false)
+                setLoading(false);
             }).catch((e)=>{
                 console.log(e);
                 setError(e);
-                setMsg(true)
+                setMsg(true);
+                setLoading(false);
             })
 
         }else{
@@ -77,6 +81,15 @@ export function UpdatePassword(){
 
         
         <div>
+
+<Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent:'center', margin:'auto'}}>
+    <Box sx={{ height: 40 }}>
+      <Fade in={loading}
+        style={{ transitionDelay: loading ? '100ms' : '0ms', }}unmountOnExit>
+        <CircularProgress />
+      </Fade>
+    </Box>
+    </Box>
             <Paper elevation={10} style={paperStyle}>
         <Grid align='center'>
           {/* <img src={Logo} alt="Logo" /> */}

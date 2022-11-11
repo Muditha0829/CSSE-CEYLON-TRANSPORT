@@ -1,8 +1,9 @@
-import {  Button, Grid, Paper, TextField, Typography } from "@mui/material";
+import {  Button, Grid, Paper, TextField, Typography,Box,Fade } from "@mui/material";
 import {Link} from "react-router-dom";
 import React, { useState } from "react";
 import Image from './../../Images/bus.webp'
 import { useNavigate } from "react-router-dom";
+import CircularProgress from '@mui/material/CircularProgress';
 
 //Firebase libraries
 import { signInUser } from "../../firebase.api";
@@ -25,7 +26,7 @@ const Signin=()=>{
     email:'',
     password:''
   });
-  
+  const [loading, setLoading] = React.useState(false);
   const [error,setError] = useState("");
   const [success,setSuccess] = useState("");
   
@@ -43,17 +44,30 @@ const Signin=()=>{
         setCredentials({...credentials,[e.target.name]:e.target.value});}
 
         const handleSubmit = async(e) =>{
+          setLoading(true);
             e.preventDefault();
             signInUser(credentials).then((res) => {
               setSuccess(res);
+              setLoading(false);
               navigate('/');
             }).catch((err) => {
+              setLoading(false);
               setError(err);
             });
             
           }
 
   return(
+    <div>
+    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent:'center', margin:'auto'}}>
+    <Box sx={{ height: 40 }}>
+      <Fade in={loading}
+        style={{ transitionDelay: loading ? '100ms' : '0ms', }}unmountOnExit>
+        <CircularProgress />
+      </Fade>
+    </Box>
+    </Box>
+
     <Grid container spacing={1} justifyContent='space-between'>
         <Grid item xs={4} sm={12} md={4} mt={20}>
         <Paper elevation={0} style={paperStyle}>
@@ -103,7 +117,7 @@ const Signin=()=>{
       
 
     </Grid>
-
+    </div>
     
   );
 }

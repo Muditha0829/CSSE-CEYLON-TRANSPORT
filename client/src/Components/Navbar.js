@@ -20,7 +20,7 @@ import { useNavigate } from "react-router-dom";
 import { getAuth,onAuthStateChanged,signOut } from 'firebase/auth';
 
 const settings = ['Profile','Dashboard','Logout'];
-const pages = [''];
+const pages = ['Account Summary','Account Balance','Payment'];
 
 
 function Navbar() {

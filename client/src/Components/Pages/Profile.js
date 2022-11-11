@@ -1,5 +1,5 @@
 import { useEffect,useState } from "react"
-import { Grid, Paper,Button } from "@mui/material";
+import { Grid, Paper,Button,Box,Fade, CircularProgress } from "@mui/material";
 import Typography from '@mui/material/Typography';
 import { useNavigate } from "react-router-dom";
 
@@ -41,19 +41,22 @@ export default function Profile(){
     
     const [userId, setUserId] = useState([]);
     const [data, setData] = useState([]);
-
+    const [loading, setLoading] = React.useState(false);
     const navigate = useNavigate();
 
     function fetchData(){
         getData(userId).then((res)=>{
+            setLoading(false);
             setData(res);
         }).catch((e)=>{
+            setLoading(false);
             console.log(e);
         })
         // console.log(data)
     }
 
     const loader = async () => {
+        
         onAuthStateChanged(getAuth(),(user)=>{
           if (user) {
             setUserId(user.uid)
@@ -81,6 +84,15 @@ export default function Profile(){
     return(
 
         <div>
+
+<Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent:'center', margin:'auto'}}>
+    <Box sx={{ height: 40 }}>
+      <Fade in={loading}
+        style={{ transitionDelay: loading ? '100ms' : '0ms', }}unmountOnExit>
+        <CircularProgress />
+      </Fade>
+    </Box>
+    </Box>
             <Paper elevation={10} style={paperStyle}>
         <Grid align='center'>
           {/* <img src={Logo} alt="Logo" /> */}
