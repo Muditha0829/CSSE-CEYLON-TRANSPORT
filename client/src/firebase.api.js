@@ -45,7 +45,9 @@ export function registerLocalUser(user){
             "fullName":user.fullName,
             "userType":'local',
             "nic":user.nic,
-            "phoneNo":user.phoneNo
+            'passportNo':'',
+            "phoneNo":user.phoneNo,
+            "amount":''
              }
 
             setDoc(doc(db, "userData", userId), userDoc);
@@ -88,7 +90,9 @@ export function registerForeignUser(user){
             "fullName":user.fullName,
             "userType":'foreign',
             "passportNo":user.passportNo,
-            "phoneNo":user.phoneNo
+            "nic":'',
+            "phoneNo":user.phoneNo,
+            "amount":''
              }
     
             setDoc(doc(db, "userData", userId), userDoc);
