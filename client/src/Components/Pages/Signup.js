@@ -175,7 +175,8 @@ const Signup=()=>{
         {error && <div style={errorMsg}>{error}</div>}
         {success && <div style={successMsg}>{success}</div>}
 
-        <Button type="submit" color="primary" variant="contained" fullWidth style={btnStyle} >Sign Up</Button>
+        <Button type="submit" color="primary" variant="contained" fullWidth style={btnStyle} 
+        disabled={ !(/^([A-Za-z0-9_\-.])+@(["gmail"])+\.(["com"]{2,})$/.test(credentials.email)) }>Sign Up</Button>
         </form>
 
       </TabPanel>
@@ -184,13 +185,14 @@ const Signup=()=>{
       <form onSubmit={handleSubmit}>
         <TextField label="Enter Your Full Name" type="text" name="fullName" fullWidth required style={textStyle} value={credentials.fullName} onChange={handleChange} />
         <TextField label="Enter Your Passport No" type="text" name="passportNo" fullWidth required style={textStyle} value={credentials.passportNo} onChange={handleChange} />
-        <TextField label="Enter Your Contact No" type="text" name="phoneNumber" fullWidth required style={textStyle} value={credentials.phoneNumber} onChange={handleChange} />
+        <TextField label="Enter Your Contact No" type="text" name="phoneNumber" fullWidth required style={textStyle} value={credentials.phoneNumber} minLength={10} onChange={handleChange} />
         <TextField label="Enter Your Email Address" type="email" name="email" fullWidth required style={textStyle} value={credentials.email} onChange={handleChange} />
         <TextField label="Password"  type="password" name="password" fullWidth required style={textStyle} value={credentials.password} onChange={handleChange}/>
         <TextField label="Confirm Password"  type="password" name="cpassword" fullWidth required style={textStyle} value={credentials.cpassword} onChange={handleChange}/>
         {error && <div style={errorMsg}>{error}</div>}
         {success && <div style={successMsg}>{success}</div>}
-        <Button type="submit" color="primary" variant="contained" fullWidth style={btnStyle} >Sign Up</Button>
+        <Button type="submit" color="primary" variant="contained" fullWidth style={btnStyle} 
+        disabled={ !(/^([A-Za-z0-9_\-.])+@(["gmail"])+\.(["com"]{2,})$/.test(credentials.email)) }>Sign Up</Button>
         </form>
 
       </TabPanel>
