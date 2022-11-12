@@ -6,6 +6,7 @@ import DashBoard from "./Components/Pages/Dashboard";
 import Signin from "./Components/Pages/Signin";
 import Signup from "./Components/Pages/Signup";
 import Profile from "./Components/Pages/Profile";
+import AccountSummery from "./Components/Pages/AccountSummery";
 
 
 import { getAuth,onAuthStateChanged } from 'firebase/auth';
@@ -60,6 +61,9 @@ function App() {
         )}
         {auths && (
            <Route path='/updatepassword' element={<UpdatePassword/>}/>
+        )}
+        {auths && (
+           <Route path='/accountsummery' element={<AccountSummery/>}/>
         )}
 
           <Route path='/logout' element={<Logout/>}/>
