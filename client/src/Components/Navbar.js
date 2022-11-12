@@ -95,6 +95,8 @@ function Navbar() {
             CEYLON TRANSPORT
           </Typography>
 
+            
+          
           <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
             <IconButton
               size="large"
@@ -151,6 +153,7 @@ function Navbar() {
             CEYLON TRANSPORT
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
+          {auths && (<div>
             {pages.map((page) => (
               <Button
                 key={page}
@@ -160,6 +163,8 @@ function Navbar() {
                 {page}
               </Button>
             ))}
+
+          </div>)}
           </Box>
           {auths && (<div>
             <IconButton
